@@ -1,0 +1,1736 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>AIWA 10-BAND DSP AUDIO PLAYER</title>
+<style>
+  :root {
+    --bg-outer: radial-gradient(circle at top, #181822 0%, #050507 100%);
+    --shell-bg: #101015;
+    --container-bg: #121217;
+    --container-border: rgba(255,255,255,0.08);
+    --header-bg: linear-gradient(90deg, #101015, #1b1b24, #101015);
+    --header-border: #262632;
+    --accent-primary: #00f5d4;
+    --accent-secondary: #00e5ff;
+    --accent-glow: rgba(0, 229, 255, 0.25);
+    --panel-bg: #15151c;
+    --panel-border: #222c36;
+    --list-bg: #0d0e13;
+    --list-header-bg: #161820;
+    --list-item-border: #161820;
+    --text-main: #f0f0f0;
+    --text-muted: #9aa4b2;
+    --text-item: #b8b8c4;
+    --btn-bg: #1a1a22;
+    --btn-border: #2a2a36;
+    --btn-text: #dddddd;
+    --play-btn-bg: linear-gradient(135deg, #00b0ff, #0081cb);
+    --play-btn-text: #ffffff;
+    --slider-track: #262b36;
+    --logo-start: #e8f7ff;
+    --logo-mid: #00e5ff;
+    --logo-end: #00f5d4;
+  }
+
+  /* ธีม 2: SILVER HI-FI */
+  [data-theme="silver"] {
+    --bg-outer: radial-gradient(circle at top, #2c313a 0%, #111317 100%);
+    --shell-bg: linear-gradient(145deg, #d7dce3, #9aa2ae);
+    --container-bg: linear-gradient(180deg, #e4e8ee 0%, #cfd5df 100%);
+    --container-border: rgba(255,255,255,0.7);
+    --header-bg: linear-gradient(90deg, #cfd5df, #eef1f6, #cfd5df);
+    --header-border: #b3bcc9;
+    --accent-primary: #0077b6;
+    --accent-secondary: #0284c7;
+    --accent-glow: rgba(2, 132, 199, 0.35);
+    --panel-bg: #dce1e9;
+    --panel-border: #b8c1ce;
+    --list-bg: #eef1f6;
+    --list-header-bg: #d5dce6;
+    --list-item-border: #dde2eb;
+    --text-main: #18202c;
+    --text-muted: #475569;
+    --text-item: #273244;
+    --btn-bg: linear-gradient(180deg, #f8fafc, #dfe5ee);
+    --btn-border: #b4becd;
+    --btn-text: #1e293b;
+    --play-btn-bg: linear-gradient(135deg, #0284c7, #0369a1);
+    --play-btn-text: #ffffff;
+    --slider-track: #b8c2d1;
+    --logo-start: #0f172a;
+    --logo-mid: #0369a1;
+    --logo-end: #0284c7;
+  }
+
+  /* ธีม 3: AMBER GOLD */
+  [data-theme="amber"] {
+    --bg-outer: radial-gradient(circle at top, #221810 0%, #070504 100%);
+    --shell-bg: #14100c;
+    --container-bg: #16120e;
+    --container-border: rgba(255, 179, 0, 0.14);
+    --header-bg: linear-gradient(90deg, #14100c, #241b13, #14100c);
+    --header-border: #33261a;
+    --accent-primary: #ffb300;
+    --accent-secondary: #ff8f00;
+    --accent-glow: rgba(255, 160, 0, 0.3);
+    --panel-bg: #1b1611;
+    --panel-border: #36291c;
+    --list-bg: #110e0b;
+    --list-header-bg: #1f1913;
+    --list-item-border: #1e1812;
+    --text-main: #fff3e0;
+    --text-muted: #b09a82;
+    --text-item: #d6c3ae;
+    --btn-bg: #221b14;
+    --btn-border: #3b2d20;
+    --btn-text: #ffe0b2;
+    --play-btn-bg: linear-gradient(135deg, #ff9800, #e65100);
+    --play-btn-text: #ffffff;
+    --slider-track: #382a1d;
+    --logo-start: #fff8e1;
+    --logo-mid: #ffb300;
+    --logo-end: #ff6f00;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, sans-serif; -webkit-tap-highlight-color: transparent; }
+  body {
+    background: var(--bg-outer);
+    color: var(--text-main);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 8px;
+    transition: background 0.25s ease;
+  }
+
+  .player-shell {
+    width: 100%;
+    max-width: 480px;
+    background: var(--shell-bg);
+    border-radius: 22px;
+    padding: 3px;
+    position: relative;
+    box-shadow: 0 0 25px var(--accent-glow), 0 15px 45px rgba(0,0,0,0.85);
+    height: 96vh;
+    max-height: 920px;
+    display: flex;
+    transition: all 0.25s ease;
+  }
+
+  .player-container {
+    width: 100%;
+    height: 100%;
+    background: var(--container-bg);
+    border-radius: 20px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--container-border);
+  }
+
+  .header {
+    background: var(--header-bg);
+    padding: 10px 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--header-border);
+    gap: 8px;
+  }
+  .brand-wrap {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .aiwa-logo {
+    height: 22px;
+    width: auto;
+    display: block;
+    filter: drop-shadow(0 0 5px var(--accent-glow));
+  }
+  .ver-tag {
+    font-size: 9px;
+    font-family: monospace;
+    color: var(--text-muted);
+    background: rgba(128,128,128,0.12);
+    padding: 2px 5px;
+    border-radius: 5px;
+  }
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .theme-btn {
+    background: var(--btn-bg);
+    color: var(--accent-primary);
+    border: 1px solid var(--btn-border);
+    font-size: 10px;
+    font-weight: 900;
+    padding: 4px 8px;
+    border-radius: 16px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.15s ease;
+  }
+  .theme-btn:hover {
+    border-color: var(--accent-primary);
+  }
+  .badge {
+    background: rgba(0, 0, 0, 0.25);
+    color: var(--accent-primary);
+    font-family: monospace;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 0.8px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    border: 1px solid var(--accent-primary);
+  }
+
+  /* แถบแจ้งเตือนอัปเดต OTA ด้านบน */
+  .ota-banner {
+    display: none;
+    background: linear-gradient(90deg, #0077b6, #00b4d8);
+    color: #fff;
+    font-size: 11px;
+    font-weight: bold;
+    padding: 5px 12px;
+    text-align: center;
+    animation: fadeInDown 0.3s ease;
+  }
+  @keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* หน้าปัดจอ VFD มินิคอมโป */
+  .vfd-screen {
+    background: #03070a;
+    margin: 8px 12px 6px;
+    border-radius: 14px;
+    padding: 5px;
+    border: 2px solid #1e262e;
+    box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.9), 0 4px 10px rgba(0,0,0,0.45);
+  }
+  canvas {
+    width: 100%;
+    height: 140px;
+    display: block;
+    border-radius: 8px;
+  }
+
+  /* กล่องคิวเพลง + แถบเพิ่มไฟล์เพลง */
+  .playlist-box {
+    flex: 1;
+    min-height: 85px;
+    margin: 2px 12px 6px;
+    background: var(--list-bg);
+    border-radius: 12px;
+    border: 1px solid var(--panel-border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .playlist-header {
+    background: var(--list-header-bg);
+    padding: 6px 10px;
+    border-bottom: 1px solid var(--panel-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+  }
+  .playlist-title-wrap {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .playlist-title {
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+  }
+  .track-count {
+    font-size: 10px;
+    font-weight: bold;
+    color: var(--accent-secondary);
+    background: rgba(128, 128, 128, 0.12);
+    padding: 2px 7px;
+    border-radius: 10px;
+    border: 1px solid var(--btn-border);
+  }
+  .playlist-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .btn-add-track {
+    background: var(--btn-bg);
+    color: var(--accent-primary);
+    border: 1px solid var(--accent-primary);
+    padding: 4px 10px;
+    border-radius: 7px;
+    font-size: 11px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .btn-clear-track {
+    background: var(--btn-bg);
+    color: var(--text-muted);
+    border: 1px solid var(--btn-border);
+    padding: 4px 8px;
+    border-radius: 7px;
+    font-size: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .btn-clear-track:hover {
+    color: #ff5252;
+    border-color: #ff5252;
+  }
+  .btn-clear-track.pending {
+    color: #ff9800;
+    border-color: #ff9800;
+    background: rgba(255, 152, 0, 0.14);
+    animation: pulsePending 1.2s infinite;
+  }
+  @keyframes pulsePending {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.55; }
+  }
+  input[type="file"] { display: none; }
+
+  .playlist {
+    flex: 1;
+    overflow-y: auto;
+  }
+  .playlist::-webkit-scrollbar { width: 5px; }
+  .playlist::-webkit-scrollbar-thumb { background: var(--btn-border); border-radius: 3px; }
+  .song-item {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--list-item-border);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--text-item);
+    transition: background 0.1s;
+  }
+  .song-item:hover { background: rgba(128, 128, 128, 0.1); }
+  .song-item.active {
+    background: linear-gradient(90deg, var(--accent-glow), transparent);
+    color: var(--accent-secondary);
+    font-weight: bold;
+    border-left: 3px solid var(--accent-secondary);
+  }
+  .empty-msg {
+    text-align: center;
+    color: var(--text-muted);
+    padding: 20px 12px;
+    font-size: 12px;
+    line-height: 1.6;
+  }
+
+  .controls-panel { padding: 4px 12px 10px; }
+  .now-playing {
+    font-size: 12px; font-weight: bold; color: var(--text-main);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    margin-bottom: 4px; text-align: center;
+  }
+  .progress-wrap { margin-bottom: 5px; }
+  #seekBar { width: 100%; accent-color: var(--accent-secondary); cursor: pointer; height: 4px; }
+  .time-row { display: flex; justify-content: space-between; font-size: 10px; color: var(--text-muted); }
+
+  .btn-group {
+    display: grid;
+    grid-template-columns: 0.7fr 1fr 1.2fr 1fr 0.75fr;
+    gap: 6px;
+    margin-bottom: 7px;
+  }
+  .ctrl-btn {
+    padding: 7px 4px;
+    border: 1px solid var(--btn-border);
+    border-radius: 9px;
+    background: var(--btn-bg);
+    color: var(--btn-text);
+    font-size: 11px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+  }
+  .ctrl-btn.play {
+    background: var(--play-btn-bg);
+    border: none;
+    color: var(--play-btn-text);
+    font-size: 12px;
+  }
+  .ctrl-btn.mode-active {
+    border-color: var(--accent-primary);
+    color: var(--accent-primary);
+    box-shadow: 0 0 8px var(--accent-glow);
+  }
+
+  .dsp-box {
+    background: var(--panel-bg);
+    padding: 8px 10px;
+    border-radius: 12px;
+    border: 1px solid var(--panel-border);
+  }
+  .eq-top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 6px;
+  }
+  .eq-toggle-btn {
+    background: var(--btn-bg);
+    color: var(--accent-primary);
+    border: 1px solid var(--btn-border);
+    border-radius: 7px;
+    padding: 4px 9px;
+    font-size: 11px;
+    font-weight: 900;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .preset-select {
+    background: var(--btn-bg);
+    color: var(--accent-secondary);
+    border: 1px solid var(--btn-border);
+    border-radius: 7px;
+    padding: 4px 7px;
+    font-size: 11px;
+    font-weight: bold;
+    outline: none;
+    cursor: pointer;
+  }
+
+  .eq-collapse-area {
+    margin-top: 7px;
+  }
+  .eq-collapse-area.hidden {
+    display: none;
+  }
+
+  .vlc-eq-grid {
+    display: grid;
+    grid-template-columns: repeat(11, 1fr);
+    gap: 2px;
+    background: var(--list-bg);
+    padding: 7px 4px 5px;
+    border-radius: 8px;
+    border: 1px solid var(--panel-border);
+  }
+  .eq-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .eq-val {
+    font-size: 8px;
+    color: var(--accent-secondary);
+    font-family: monospace;
+    height: 11px;
+  }
+  .slider-wrap {
+    height: 64px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  .slider-wrap::before {
+    content: '';
+    position: absolute;
+    width: 70%;
+    height: 1px;
+    background: rgba(128,128,128,0.25);
+    pointer-events: none;
+  }
+  .eq-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 60px;
+    height: 4px;
+    background: var(--slider-track);
+    border-radius: 2px;
+    outline: none;
+    transform: rotate(-90deg);
+    cursor: pointer;
+  }
+  .eq-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: var(--accent-secondary);
+    box-shadow: 0 0 6px var(--accent-glow);
+    cursor: pointer;
+  }
+  .eq-slider.preamp::-webkit-slider-thumb {
+    background: var(--accent-primary);
+  }
+  .eq-label {
+    font-size: 8px;
+    color: var(--text-muted);
+    font-weight: bold;
+    margin-top: 2px;
+  }
+  .eq-col.preamp-col {
+    border-right: 1px solid var(--panel-border);
+    padding-right: 2px;
+  }
+  .eq-col.preamp-col .eq-label { color: var(--accent-primary); }
+
+  .enhance-grid {
+    display: grid;
+    grid-template-columns: 1.15fr 1fr 0.9fr;
+    gap: 5px;
+    margin-top: 7px;
+  }
+  .fx-btn {
+    padding: 8px 4px;
+    border-radius: 9px;
+    border: 1px solid var(--btn-border);
+    background: var(--btn-bg);
+    color: var(--text-muted);
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: 0.3px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    transition: all 0.18s ease;
+    white-space: nowrap;
+  }
+  .fx-btn .fx-led {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #555;
+    flex-shrink: 0;
+  }
+  .fx-btn.bass-active {
+    border-color: #ff9800;
+    color: #ff9800;
+    box-shadow: 0 0 12px rgba(255, 152, 0, 0.25);
+  }
+  .fx-btn.bass-active .fx-led {
+    background: #ff9800;
+    box-shadow: 0 0 8px #ff9800;
+  }
+  .fx-btn.bbe-active {
+    border-color: var(--accent-secondary);
+    color: var(--accent-secondary);
+    box-shadow: 0 0 12px var(--accent-glow);
+  }
+  .fx-btn.bbe-active .fx-led {
+    background: var(--accent-secondary);
+    box-shadow: 0 0 8px var(--accent-secondary);
+  }
+  .fx-btn.fade-active {
+    border-color: #00e676;
+    color: #00e676;
+    box-shadow: 0 0 12px rgba(0, 230, 118, 0.25);
+  }
+  .fx-btn.fade-active .fx-led {
+    background: #00e676;
+    box-shadow: 0 0 8px #00e676;
+  }
+</style>
+</head>
+<body>
+
+<div class="player-shell" id="playerShell">
+  <div class="player-container">
+    <div class="ota-banner" id="otaBanner">กำลังอัปเดตเวอร์ชันใหม่...</div>
+
+    <div class="header">
+      <div class="brand-wrap">
+        <svg class="aiwa-logo" viewBox="0 0 130 42" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="aiwaGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="var(--logo-start)"/>
+              <stop offset="55%" stop-color="var(--logo-mid)"/>
+              <stop offset="100%" stop-color="var(--logo-end)"/>
+            </linearGradient>
+          </defs>
+          <path d="M26 16 H14 C8.5 16 5 19.5 5 24.5 C5 29.5 8.5 33 14 33 C18 33 21 31.2 22.5 28.8 V32.5 H31 V22 C31 18 28.8 16 26 16 Z M17.5 27.5 C14.8 27.5 13.2 26 13.2 24.2 C13.2 22.4 14.8 21 17.5 21 C20.2 21 22.5 22.4 22.5 24.2 C22.5 26 20.2 27.5 17.5 27.5 Z" fill="url(#aiwaGrad)"/>
+          <circle cx="42" cy="8.5" r="4.6" fill="#ff1744"/>
+          <rect x="37.6" y="16" width="8.8" height="16.5" rx="3.5" fill="url(#aiwaGrad)"/>
+          <path d="M52 16 H60.5 L64.5 26.8 L69.5 16 H77.5 L82.5 26.8 L86.5 16 H95 L87.2 32.5 H79.2 L73.5 21.8 L67.8 32.5 H59.8 Z" fill="url(#aiwaGrad)"/>
+          <path d="M119 16 H107 C101.5 16 98 19.5 98 24.5 C98 29.5 101.5 33 107 33 C111 33 114 31.2 115.5 28.8 V32.5 H124 V22 C124 18 121.8 16 119 16 Z M110.5 27.5 C107.8 27.5 106.2 26 106.2 24.2 C106.2 22.4 107.8 21 110.5 21 C113.2 21 115.5 22.4 115.5 24.2 C115.5 26 113.2 27.5 110.5 27.5 Z" fill="url(#aiwaGrad)"/>
+        </svg>
+        <span class="ver-tag" id="verTag">v1.0</span>
+      </div>
+
+      <div class="header-right">
+        <button class="theme-btn" id="themeBtn" onclick="cycleTheme()" title="เปลี่ยนสีสกิน">
+          🎨 <span id="themeName">CYAN</span>
+        </button>
+        <div class="badge" id="remainTimeBadge">-00:00</div>
+      </div>
+    </div>
+
+    <!-- หน้าปัด VFD Spectrum Analyzer -->
+    <div class="vfd-screen">
+      <canvas id="vfdCanvas" width="440" height="150"></canvas>
+    </div>
+
+    <!-- กล่องคิวเพลง + ปุ่มเพิ่มไฟล์เพลงในตัว -->
+    <div class="playlist-box">
+      <div class="playlist-header">
+        <div class="playlist-title-wrap">
+          <span class="playlist-title">DISC / TRACK LIST</span>
+          <span class="track-count" id="trackCount">0 เพลง</span>
+        </div>
+        <div class="playlist-actions">
+          <button class="btn-clear-track" id="clearTracksBtn" title="ล้างคิวเพลง">ล้าง</button>
+          <label class="btn-add-track">
+            + เพิ่มเพลง
+            <input type="file" id="fileInput" accept="audio/*" multiple>
+          </label>
+        </div>
+      </div>
+
+      <div class="playlist" id="playlist">
+        <div class="empty-msg">
+          ยังไม่มีเพลงในคิว<br>กดปุ่ม <b>"+ เพิ่มเพลง"</b> มุมขวาบนของกล่องนี้เพื่อเลือกไฟล์
+        </div>
+      </div>
+    </div>
+
+    <div class="controls-panel">
+      <div class="now-playing" id="nowPlaying">เลือกเพลงเพื่อเริ่มเล่น...</div>
+
+      <div class="progress-wrap">
+        <input type="range" id="seekBar" value="0" min="0" step="1">
+        <div class="time-row">
+          <span id="currentTime">00:00</span>
+          <span id="durationTime">00:00</span>
+        </div>
+      </div>
+
+      <div class="btn-group">
+        <button class="ctrl-btn" id="shuffleBtn" onclick="toggleShuffle()" title="สุ่มเพลง">🔀 สุ่ม</button>
+        <button class="ctrl-btn" id="prevBtn">⏮ ก่อนหน้า</button>
+        <button class="ctrl-btn play" id="playPauseBtn">▶ เล่น</button>
+        <button class="ctrl-btn" id="nextBtn">ถัดไป ⏭</button>
+        <button class="ctrl-btn mode-active" id="repeatBtn" onclick="toggleRepeat()" title="โหมดเล่นวน">🔁 วน</button>
+      </div>
+
+      <div class="dsp-box">
+        <div class="eq-top-bar">
+          <button class="eq-toggle-btn" id="eqToggleBtn" onclick="toggleEqPanel()">
+            🎛️ 10-BAND EQ <span id="eqArrow">▲</span>
+          </button>
+          <select class="preset-select" id="presetSelect" onchange="applyVlcPreset(this.value)">
+            <option value="flat">Preset: Flat (ปกติ)</option>
+            <option value="bass">Preset: Full Bass (เน้นเบส)</option>
+            <option value="bassTreble">Preset: Full Bass & Treble</option>
+            <option value="rock">Preset: Rock (ร็อก)</option>
+            <option value="pop">Preset: Pop (ป๊อป)</option>
+            <option value="dance">Preset: Dance (แดนซ์)</option>
+            <option value="club">Preset: Club (คลับ)</option>
+            <option value="live">Preset: Live (แสดงสด)</option>
+            <option value="custom" disabled hidden>Preset: Custom (ปรับเอง)</option>
+          </select>
+        </div>
+
+        <div class="eq-collapse-area" id="eqCollapseArea">
+          <div class="vlc-eq-grid" id="eqGrid"></div>
+        </div>
+
+        <div class="enhance-grid">
+          <button class="fx-btn" id="superBassBtn" onclick="toggleSuperBass()">
+            <span class="fx-led"></span>
+            <span id="superBassText">SUPER BASS</span>
+          </button>
+          <button class="fx-btn" id="bbeWideBtn" onclick="toggleBbeWide()">
+            <span class="fx-led"></span>
+            <span id="bbeWideText">BBE WIDE</span>
+          </button>
+          <button class="fx-btn fade-active" id="crossfadeBtn" onclick="cycleCrossfade()" title="มิกซ์ซ้อนเพลงแบบ Winamp">
+            <span class="fx-led"></span>
+            <span id="crossfadeText">FADE : 4s</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // =========================================================================
+  // ตั้งค่าระบบอัปเดตอัตโนมัติ (OTA) - แก้ลิงก์ตรงนี้เมื่อสร้าง GitHub Pages แล้ว
+  // =========================================================================
+  const APP_LOCAL_VERSION = '1.0';
+  const OTA_BASE_URL = ''; // ตัวอย่าง: 'https://username.github.io/aiwa-player' (ปล่อยว่างไว้ได้ เล่นออฟไลน์ปกติ)
+  const OTA_VER_KEY = 'aiwa_ota_cached_ver';
+  const OTA_CODE_KEY = 'aiwa_ota_cached_html';
+
+  (function initOtaUpdater() {
+    // 1. ถ้าเคยดูดโค้ดเวอร์ชันใหม่กว่ามาเก็บไว้ในเครื่องแล้ว ให้เปิดเวอร์ชันใหม่นั้นทันที
+    try {
+      const cachedVer = localStorage.getItem(OTA_VER_KEY);
+      const cachedHtml = localStorage.getItem(OTA_CODE_KEY);
+      if (cachedVer && cachedHtml && cachedVer !== APP_LOCAL_VERSION && !window.__AIWA_OTA_BOOTED__) {
+        window.__AIWA_OTA_BOOTED__ = true;
+        document.open();
+        document.write(cachedHtml);
+        document.close();
+        return;
+      }
+    } catch (e) {}
+
+    // 2. แอบเช็กเวอร์ชันใหม่เบื้องหลัง (ถ้าตั้งค่า OTA_BASE_URL ไว้แล้วและมีเน็ต)
+    if (!OTA_BASE_URL || !OTA_BASE_URL.startsWith('http')) return;
+
+    setTimeout(async () => {
+      try {
+        const res = await fetch(`${OTA_BASE_URL}/version.json?t=${Date.now()}`, { cache: 'no-store' });
+        if (!res.ok) return;
+        const remote = await res.json();
+        const currentVer = localStorage.getItem(OTA_VER_KEY) || APP_LOCAL_VERSION;
+
+        if (remote.version && String(remote.version) !== String(currentVer)) {
+          const banner = document.getElementById('otaBanner');
+          if (banner) {
+            banner.style.display = 'block';
+            banner.textContent = `กำลังอัปเดตเป็นเวอร์ชัน ${remote.version}...`;
+          }
+          const htmlRes = await fetch(`${OTA_BASE_URL}/app.html?t=${Date.now()}`, { cache: 'no-store' });
+          if (htmlRes.ok) {
+            const newHtml = await htmlRes.text();
+            localStorage.setItem(OTA_CODE_KEY, newHtml);
+            localStorage.setItem(OTA_VER_KEY, String(remote.version));
+            if (banner) banner.textContent = `อัปเดตเวอร์ชัน ${remote.version} สำเร็จ! กำลังรีโหลด...`;
+            setTimeout(() => location.reload(), 800);
+          }
+        }
+      } catch (e) {
+        // ออฟไลน์หรือยังไม่ได้สร้างเว็บ: เงียบไว้และเล่นเพลงต่อตามปกติ
+      }
+    }, 1500);
+  })();
+  // =========================================================================
+
+  const STORAGE_KEY = 'aiwa_dsp_player_settings_v9';
+
+  const playerShell = document.getElementById('playerShell');
+  const themeNameEl = document.getElementById('themeName');
+  const remainTimeBadge = document.getElementById('remainTimeBadge');
+  const verTag = document.getElementById('verTag');
+  const fileInput = document.getElementById('fileInput');
+  const clearTracksBtn = document.getElementById('clearTracksBtn');
+  const playlistEl = document.getElementById('playlist');
+  const trackCountEl = document.getElementById('trackCount');
+  const nowPlayingEl = document.getElementById('nowPlaying');
+  const playPauseBtn = document.getElementById('playPauseBtn');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const shuffleBtn = document.getElementById('shuffleBtn');
+  const repeatBtn = document.getElementById('repeatBtn');
+  const seekBar = document.getElementById('seekBar');
+  const currentTimeEl = document.getElementById('currentTime');
+  const durationTimeEl = document.getElementById('durationTime');
+  const eqGrid = document.getElementById('eqGrid');
+  const presetSelect = document.getElementById('presetSelect');
+  const eqCollapseArea = document.getElementById('eqCollapseArea');
+  const eqArrow = document.getElementById('eqArrow');
+  const superBassBtn = document.getElementById('superBassBtn');
+  const bbeWideBtn = document.getElementById('bbeWideBtn');
+  const crossfadeBtn = document.getElementById('crossfadeBtn');
+  const crossfadeText = document.getElementById('crossfadeText');
+
+  if (verTag) {
+    verTag.textContent = 'v' + (localStorage.getItem(OTA_VER_KEY) || APP_LOCAL_VERSION);
+  }
+
+  let tracks = [];
+  let currentIndex = -1;
+  let isAudioInit = false;
+  let clearAfterTrack = false;
+  let isFadingOut = false;
+
+  let isPlaying = false;
+  let currentSource = null;
+  let currentGain = null;
+  let fadingOutSource = null;
+  let fadingOutGain = null;
+  let trackStartCtxTime = 0;
+  let pausedOffset = 0;
+  let currentDuration = 0;
+  let playSessionId = 0;
+  let crossfadeTriggeredForSession = -1;
+
+  const THEMES = ['cyan', 'silver', 'amber'];
+  const THEME_LABELS = { cyan: 'CYAN', silver: 'SILVER', amber: 'AMBER' };
+  const CROSSFADE_OPTIONS = [1.5, 2.5, 4, 6, 8, 0];
+
+  let currentTheme = 'cyan';
+  let crossfadeSec = 4;
+  let isSuperBassOn = false;
+  let isBbeWideOn = false;
+  let isEqVisible = true;
+  let isShuffleOn = false;
+  let repeatMode = 'all';
+  let currentPreset = 'flat';
+  let eqGains = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+
+  const VLC_FREQS = [60, 170, 310, 600, 1000, 3000, 6000, 12000, 14000, 16000];
+  const VLC_LABELS = ['60', '170', '310', '600', '1K', '3K', '6K', '12K', '14K', '16K'];
+
+  const VLC_PRESETS = {
+    flat:       [0,   0,  0,  0,  0,  0,  0,  0,  0,  0,  0],
+    bass:       [-2,  8,  7,  5,  2,  0, -2, -3, -4, -4, -4],
+    bassTreble: [-3,  6,  5,  0, -4, -2,  1,  5,  7,  8,  8],
+    rock:       [-2,  5,  3, -2, -4, -1,  2,  5,  6,  6,  6],
+    pop:        [-1, -1,  2,  4,  4,  2, -1, -2, -2, -1, -1],
+    dance:      [-2,  6,  4,  1,  0,  0, -2, -3, -3,  0,  0],
+    club:       [-1,  0,  0,  3,  4,  4,  3,  1,  0,  0,  0],
+    live:       [-1, -3,  0,  2,  3,  3,  3,  2,  1,  1,  1]
+  };
+
+  let audioCtx, preampNode, eqFilterNodes = [], subSonicCut, deepWarm58, punchBass95, boxinessCut220;
+  let bbePresence3500, bbeAir10000, splitterNode, mergerNode, midGain, sideGain, limiter, analyser;
+
+  function saveSettings() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        currentTheme,
+        crossfadeSec,
+        eqGains,
+        currentPreset,
+        isSuperBassOn,
+        isBbeWideOn,
+        isEqVisible,
+        isShuffleOn,
+        repeatMode
+      }));
+    } catch (e) {}
+  }
+
+  function loadSettings() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return;
+      const data = JSON.parse(raw);
+      if (THEMES.includes(data.currentTheme)) currentTheme = data.currentTheme;
+      if (CROSSFADE_OPTIONS.includes(data.crossfadeSec)) crossfadeSec = data.crossfadeSec;
+      if (Array.isArray(data.eqGains) && data.eqGains.length === 11) eqGains = data.eqGains;
+      if (data.currentPreset) currentPreset = data.currentPreset;
+      if (typeof data.isSuperBassOn === 'boolean') isSuperBassOn = data.isSuperBassOn;
+      if (typeof data.isBbeWideOn === 'boolean') isBbeWideOn = data.isBbeWideOn;
+      if (typeof data.isEqVisible === 'boolean') isEqVisible = data.isEqVisible;
+      if (typeof data.isShuffleOn === 'boolean') isShuffleOn = data.isShuffleOn;
+      if (['all', 'one', 'off'].includes(data.repeatMode)) repeatMode = data.repeatMode;
+    } catch (e) {}
+  }
+
+  function cycleTheme() {
+    const nextIdx = (THEMES.indexOf(currentTheme) + 1) % THEMES.length;
+    currentTheme = THEMES[nextIdx];
+    syncUiFromState();
+    saveSettings();
+  }
+
+  function cycleCrossfade() {
+    const nextIdx = (CROSSFADE_OPTIONS.indexOf(crossfadeSec) + 1) % CROSSFADE_OPTIONS.length;
+    crossfadeSec = CROSSFADE_OPTIONS[nextIdx];
+    syncUiFromState();
+    saveSettings();
+  }
+
+  function syncUiFromState() {
+    if (currentTheme === 'cyan') {
+      document.documentElement.removeAttribute('data-theme');
+    } else {
+      document.documentElement.setAttribute('data-theme', currentTheme);
+    }
+    themeNameEl.textContent = THEME_LABELS[currentTheme];
+
+    eqGains.forEach((val, idx) => {
+      const slider = document.getElementById(`eqSlider_${idx}`);
+      const valSpan = document.getElementById(`eqVal_${idx}`);
+      if (slider) slider.value = val;
+      if (valSpan) valSpan.textContent = val > 0 ? `+${val}` : `${val}`;
+    });
+    presetSelect.value = currentPreset;
+
+    if (isEqVisible) {
+      eqCollapseArea.classList.remove('hidden');
+      eqArrow.textContent = '▲';
+    } else {
+      eqCollapseArea.classList.add('hidden');
+      eqArrow.textContent = '▼';
+    }
+
+    if (isSuperBassOn) superBassBtn.classList.add('bass-active');
+    else superBassBtn.classList.remove('bass-active');
+
+    if (isBbeWideOn) bbeWideBtn.classList.add('bbe-active');
+    else bbeWideBtn.classList.remove('bbe-active');
+
+    if (crossfadeSec > 0) {
+      crossfadeBtn.classList.add('fade-active');
+      crossfadeText.textContent = `FADE : ${crossfadeSec}s`;
+    } else {
+      crossfadeBtn.classList.remove('fade-active');
+      crossfadeText.textContent = 'FADE : OFF';
+    }
+
+    if (isShuffleOn) shuffleBtn.classList.add('mode-active');
+    else shuffleBtn.classList.remove('mode-active');
+
+    if (repeatMode === 'all') {
+      repeatBtn.classList.add('mode-active');
+      repeatBtn.textContent = '🔁 วน';
+    } else if (repeatMode === 'one') {
+      repeatBtn.classList.add('mode-active');
+      repeatBtn.textContent = '🔂 วน1';
+    } else {
+      repeatBtn.classList.remove('mode-active');
+      repeatBtn.textContent = '➡️ ปิด';
+    }
+  }
+
+  function toggleEqPanel() {
+    isEqVisible = !isEqVisible;
+    syncUiFromState();
+    saveSettings();
+  }
+
+  function toggleSuperBass() {
+    isSuperBassOn = !isSuperBassOn;
+    syncUiFromState();
+    updateAudioFilters();
+    saveSettings();
+  }
+
+  function toggleBbeWide() {
+    isBbeWideOn = !isBbeWideOn;
+    syncUiFromState();
+    updateAudioFilters();
+    saveSettings();
+  }
+
+  function toggleShuffle() {
+    isShuffleOn = !isShuffleOn;
+    syncUiFromState();
+    saveSettings();
+  }
+
+  function toggleRepeat() {
+    if (repeatMode === 'all') repeatMode = 'one';
+    else if (repeatMode === 'one') repeatMode = 'off';
+    else repeatMode = 'all';
+    syncUiFromState();
+    saveSettings();
+  }
+
+  function buildEqUI() {
+    eqGrid.innerHTML = '';
+    const allLabels = ['PRE', ...VLC_LABELS];
+
+    allLabels.forEach((lbl, idx) => {
+      const col = document.createElement('div');
+      col.className = 'eq-col' + (idx === 0 ? ' preamp-col' : '');
+
+      const valSpan = document.createElement('span');
+      valSpan.className = 'eq-val';
+      valSpan.id = `eqVal_${idx}`;
+      valSpan.textContent = '0';
+
+      const wrap = document.createElement('div');
+      wrap.className = 'slider-wrap';
+
+      const slider = document.createElement('input');
+      slider.type = 'range';
+      slider.min = -12;
+      slider.max = 12;
+      slider.step = 0.5;
+      slider.value = 0;
+      slider.id = `eqSlider_${idx}`;
+      slider.className = 'eq-slider' + (idx === 0 ? ' preamp' : '');
+
+      slider.addEventListener('input', (e) => {
+        const val = parseFloat(e.target.value);
+        eqGains[idx] = val;
+        valSpan.textContent = val > 0 ? `+${val}` : `${val}`;
+        currentPreset = 'custom';
+        presetSelect.value = 'custom';
+        updateAudioFilters();
+        saveSettings();
+      });
+
+      slider.addEventListener('dblclick', () => {
+        slider.value = 0;
+        eqGains[idx] = 0;
+        valSpan.textContent = '0';
+        currentPreset = 'custom';
+        presetSelect.value = 'custom';
+        updateAudioFilters();
+        saveSettings();
+      });
+
+      const labelSpan = document.createElement('span');
+      labelSpan.className = 'eq-label';
+      labelSpan.textContent = lbl;
+
+      wrap.appendChild(slider);
+      col.appendChild(valSpan);
+      col.appendChild(wrap);
+      col.appendChild(labelSpan);
+      eqGrid.appendChild(col);
+    });
+  }
+
+  function applyVlcPreset(presetKey) {
+    const values = VLC_PRESETS[presetKey];
+    if (!values) return;
+    currentPreset = presetKey;
+    eqGains = [...values];
+    syncUiFromState();
+    updateAudioFilters();
+    saveSettings();
+  }
+
+  buildEqUI();
+  loadSettings();
+  syncUiFromState();
+
+  function updateAudioFilters() {
+    if (!isAudioInit) return;
+    const now = audioCtx.currentTime;
+
+    let headroomDb = -0.5;
+    if (isSuperBassOn) headroomDb -= 4.0;
+    if (isBbeWideOn) headroomDb -= 1.2;
+
+    const totalPreampDb = eqGains[0] + headroomDb;
+    const linearGain = Math.pow(10, totalPreampDb / 20);
+    preampNode.gain.setTargetAtTime(linearGain, now, 0.05);
+
+    for (let i = 0; i < VLC_FREQS.length; i++) {
+      eqFilterNodes[i].gain.setTargetAtTime(eqGains[i + 1], now, 0.04);
+    }
+
+    if (isSuperBassOn) {
+      subSonicCut.frequency.setTargetAtTime(36, now, 0.05);
+      deepWarm58.gain.setTargetAtTime(5.5, now, 0.05);
+      punchBass95.gain.setTargetAtTime(3.2, now, 0.05);
+      boxinessCut220.gain.setTargetAtTime(-3.0, now, 0.05);
+    } else {
+      subSonicCut.frequency.setTargetAtTime(28, now, 0.05);
+      deepWarm58.gain.setTargetAtTime(0, now, 0.05);
+      punchBass95.gain.setTargetAtTime(0, now, 0.05);
+      boxinessCut220.gain.setTargetAtTime(0, now, 0.05);
+    }
+
+    if (isBbeWideOn) {
+      bbePresence3500.gain.setTargetAtTime(2.6, now, 0.05);
+      bbeAir10000.gain.setTargetAtTime(3.4, now, 0.05);
+      sideGain.gain.setTargetAtTime(1.42, now, 0.05);
+    } else {
+      bbePresence3500.gain.setTargetAtTime(0, now, 0.05);
+      bbeAir10000.gain.setTargetAtTime(0, now, 0.05);
+      sideGain.gain.setTargetAtTime(1.0, now, 0.05);
+    }
+  }
+
+  function initAudioEngine() {
+    if (isAudioInit) return;
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    audioCtx = new AudioContext();
+
+    preampNode = audioCtx.createGain();
+    preampNode.gain.value = 0.94;
+
+    subSonicCut = audioCtx.createBiquadFilter();
+    subSonicCut.type = 'highpass';
+    subSonicCut.frequency.value = 28;
+    subSonicCut.Q.value = 0.707;
+
+    let prevNode = subSonicCut;
+    preampNode.connect(subSonicCut);
+
+    eqFilterNodes = VLC_FREQS.map((freq, idx) => {
+      const filter = audioCtx.createBiquadFilter();
+      if (idx === 0) filter.type = 'lowshelf';
+      else if (idx === VLC_FREQS.length - 1) filter.type = 'highshelf';
+      else filter.type = 'peaking';
+
+      filter.frequency.value = freq;
+      filter.Q.value = 1.41;
+      filter.gain.value = 0;
+
+      prevNode.connect(filter);
+      prevNode = filter;
+      return filter;
+    });
+
+    deepWarm58 = audioCtx.createBiquadFilter();
+    deepWarm58.type = 'peaking';
+    deepWarm58.frequency.value = 58;
+    deepWarm58.Q.value = 0.9;
+
+    punchBass95 = audioCtx.createBiquadFilter();
+    punchBass95.type = 'peaking';
+    punchBass95.frequency.value = 95;
+    punchBass95.Q.value = 1.0;
+
+    boxinessCut220 = audioCtx.createBiquadFilter();
+    boxinessCut220.type = 'peaking';
+    boxinessCut220.frequency.value = 220;
+    boxinessCut220.Q.value = 1.3;
+
+    bbePresence3500 = audioCtx.createBiquadFilter();
+    bbePresence3500.type = 'peaking';
+    bbePresence3500.frequency.value = 3500;
+    bbePresence3500.Q.value = 1.1;
+
+    bbeAir10000 = audioCtx.createBiquadFilter();
+    bbeAir10000.type = 'highshelf';
+    bbeAir10000.frequency.value = 10000;
+
+    prevNode.connect(deepWarm58);
+    deepWarm58.connect(punchBass95);
+    punchBass95.connect(boxinessCut220);
+    boxinessCut220.connect(bbePresence3500);
+    bbePresence3500.connect(bbeAir10000);
+
+    splitterNode = audioCtx.createChannelSplitter(2);
+    mergerNode = audioCtx.createChannelMerger(2);
+
+    const midSum = audioCtx.createGain();
+    midSum.gain.value = 0.5;
+    const sideDiffL = audioCtx.createGain();
+    sideDiffL.gain.value = 0.5;
+    const sideDiffR = audioCtx.createGain();
+    sideDiffR.gain.value = -0.5;
+
+    midGain = audioCtx.createGain();
+    midGain.gain.value = 1.0;
+    sideGain = audioCtx.createGain();
+    sideGain.gain.value = 1.0;
+
+    const sideInvert = audioCtx.createGain();
+    sideInvert.gain.value = -1.0;
+
+    bbeAir10000.connect(splitterNode);
+    splitterNode.connect(midSum, 0);
+    splitterNode.connect(midSum, 1);
+    midSum.connect(midGain);
+
+    splitterNode.connect(sideDiffL, 0);
+    splitterNode.connect(sideDiffR, 1);
+    sideDiffL.connect(sideGain);
+    sideDiffR.connect(sideGain);
+
+    midGain.connect(mergerNode, 0, 0);
+    sideGain.connect(mergerNode, 0, 0);
+
+    midGain.connect(mergerNode, 0, 1);
+    sideGain.connect(sideInvert);
+    sideInvert.connect(mergerNode, 0, 1);
+
+    limiter = audioCtx.createDynamicsCompressor();
+    limiter.threshold.value = -3.0;
+    limiter.knee.value = 10.0;
+    limiter.ratio.value = 12.0;
+    limiter.attack.value = 0.003;
+    limiter.release.value = 0.12;
+
+    analyser = audioCtx.createAnalyser();
+    analyser.fftSize = 512;
+    analyser.smoothingTimeConstant = 0.72;
+
+    mergerNode.connect(limiter);
+    limiter.connect(analyser);
+    analyser.connect(audioCtx.destination);
+
+    isAudioInit = true;
+    updateAudioFilters();
+  }
+
+  async function getTrackBuffer(index) {
+    const track = tracks[index];
+    if (!track) return null;
+    if (track.buffer) return track.buffer;
+    if (track.decodingPromise) return track.decodingPromise;
+
+    track.decodingPromise = (async () => {
+      try {
+        const arrayBuf = await track.file.arrayBuffer();
+        const audioBuf = await audioCtx.decodeAudioData(arrayBuf);
+        track.buffer = audioBuf;
+        return audioBuf;
+      } catch (err) {
+        console.error('Decode error:', err);
+        return null;
+      } finally {
+        track.decodingPromise = null;
+      }
+    })();
+
+    return track.decodingPromise;
+  }
+
+  function preloadNextTrackBuffer() {
+    if (tracks.length <= 1) return;
+    const nextIdx = getNextTrackIndex(false);
+    if (nextIdx !== -1 && nextIdx !== currentIndex) {
+      getTrackBuffer(nextIdx);
+    }
+  }
+
+  function stopSourceSafely(srcNode) {
+    if (!srcNode) return;
+    try {
+      srcNode.onended = null;
+      srcNode.stop();
+      srcNode.disconnect();
+    } catch (e) {}
+  }
+
+  function stopAllAudioNodes() {
+    stopSourceSafely(currentSource);
+    currentSource = null;
+    stopSourceSafely(fadingOutSource);
+    fadingOutSource = null;
+    isPlaying = false;
+  }
+
+  function updateMediaSession(trackName) {
+    if (!('mediaSession' in navigator)) return;
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title: trackName || 'AIWA DSP Audio Player',
+      artist: 'AIWA 10-BAND DSP',
+      album: 'VFD Spectrum Studio'
+    });
+
+    navigator.mediaSession.setActionHandler('play', () => {
+      if (!isPlaying && tracks.length > 0) resumeCurrentTrack();
+    });
+    navigator.mediaSession.setActionHandler('pause', () => {
+      if (isPlaying) pauseCurrentTrack();
+    });
+    navigator.mediaSession.setActionHandler('previoustrack', () => playPrevTrack());
+    navigator.mediaSession.setActionHandler('nexttrack', () => playNextTrack(true));
+    navigator.mediaSession.setActionHandler('seekto', (details) => {
+      if (details.seekTime != null && currentDuration > 0) {
+        seekToTime(details.seekTime);
+      }
+    });
+  }
+
+  function resetClearButtonUI() {
+    clearAfterTrack = false;
+    isFadingOut = false;
+    clearTracksBtn.classList.remove('pending');
+    clearTracksBtn.textContent = 'ล้าง';
+  }
+
+  function performFullClear() {
+    playSessionId++;
+    stopAllAudioNodes();
+    tracks = [];
+    currentIndex = -1;
+    pausedOffset = 0;
+    currentDuration = 0;
+    resetClearButtonUI();
+    trackCountEl.textContent = '0 เพลง';
+    nowPlayingEl.textContent = 'เลือกเพลงเพื่อเริ่มเล่น...';
+    playPauseBtn.textContent = '▶ เล่น';
+    seekBar.value = 0;
+    currentTimeEl.textContent = '00:00';
+    durationTimeEl.textContent = '00:00';
+    remainTimeBadge.textContent = '-00:00';
+    playlistEl.innerHTML = `<div class="empty-msg">ยังไม่มีเพลงในคิว<br>กดปุ่ม <b>"+ เพิ่มเพลง"</b> มุมขวาบนของกล่องนี้เพื่อเลือกไฟล์</div>`;
+  }
+
+  function smoothFadeOutAndClear() {
+    if (isFadingOut || !currentGain) return;
+    isFadingOut = true;
+    const now = audioCtx.currentTime;
+    currentGain.gain.cancelScheduledValues(now);
+    currentGain.gain.setValueAtTime(currentGain.gain.value, now);
+    currentGain.gain.linearRampToValueAtTime(0.0, now + 1.4);
+
+    setTimeout(() => {
+      if (clearAfterTrack) {
+        performFullClear();
+      }
+    }, 1450);
+  }
+
+  async function playTrack(index, startOffset = 0, withCrossfade = false) {
+    if (index < 0 || index >= tracks.length) return;
+    initAudioEngine();
+    if (audioCtx.state === 'suspended') await audioCtx.resume();
+
+    const mySession = ++playSessionId;
+    resetClearButtonUI();
+
+    const prevSource = currentSource;
+    const prevGain = currentGain;
+
+    if (!withCrossfade) {
+      stopAllAudioNodes();
+    } else {
+      stopSourceSafely(fadingOutSource);
+      fadingOutSource = prevSource;
+      fadingOutGain = prevGain;
+    }
+
+    currentIndex = index;
+    pausedOffset = startOffset;
+    nowPlayingEl.textContent = tracks[index].buffer ? `▶ ${tracks[index].name}` : `⏳ กำลังโหลด... ${tracks[index].name}`;
+    playPauseBtn.textContent = '⏸ พัก';
+    renderPlaylist();
+    updateMediaSession(tracks[index].name);
+
+    const buffer = await getTrackBuffer(index);
+    if (mySession !== playSessionId || !buffer) return;
+
+    const now = audioCtx.currentTime;
+    const newSource = audioCtx.createBufferSource();
+    newSource.buffer = buffer;
+
+    const newGain = audioCtx.createGain();
+    if (withCrossfade && fadingOutSource && fadingOutGain) {
+      const steps = 20;
+      const outCurve = new Float32Array(steps);
+      const inCurve = new Float32Array(steps);
+
+      for (let i = 0; i < steps; i++) {
+        const t = i / (steps - 1);
+        outCurve[i] = Math.cos(t * Math.PI * 0.5);
+        inCurve[i] = Math.pow(Math.sin(t * Math.PI * 0.5), 2.2);
+      }
+
+      fadingOutGain.gain.cancelScheduledValues(now);
+      fadingOutGain.gain.setValueCurveAtTime(outCurve, now, crossfadeSec);
+
+      newGain.gain.cancelScheduledValues(now);
+      newGain.gain.setValueCurveAtTime(inCurve, now, crossfadeSec);
+
+      const oldSrcRef = fadingOutSource;
+      setTimeout(() => {
+        stopSourceSafely(oldSrcRef);
+        if (fadingOutSource === oldSrcRef) {
+          fadingOutSource = null;
+          fadingOutGain = null;
+        }
+      }, crossfadeSec * 1000 + 150);
+    } else {
+      newGain.gain.setValueAtTime(1.0, now);
+    }
+
+    newSource.connect(newGain);
+    newGain.connect(preampNode);
+
+    const safeOffset = Math.max(0, Math.min(startOffset, buffer.duration - 0.05));
+    newSource.start(now, safeOffset);
+
+    currentSource = newSource;
+    currentGain = newGain;
+    currentDuration = buffer.duration;
+    trackStartCtxTime = now - safeOffset;
+    isPlaying = true;
+
+    nowPlayingEl.textContent = `▶ ${tracks[index].name}`;
+    if ('mediaSession' in navigator) {
+      navigator.mediaSession.playbackState = 'playing';
+    }
+
+    newSource.onended = () => {
+      if (mySession !== playSessionId || !isPlaying || currentSource !== newSource) return;
+      if (clearAfterTrack) {
+        performFullClear();
+        return;
+      }
+      if (crossfadeTriggeredForSession !== mySession) {
+        playNextTrack(false, false);
+      }
+    };
+
+    preloadNextTrackBuffer();
+  }
+
+  function pauseCurrentTrack() {
+    if (!isPlaying) return;
+    playSessionId++;
+    pausedOffset = getCurrentPlaybackTime();
+    stopAllAudioNodes();
+    playPauseBtn.textContent = '▶ เล่น';
+    if ('mediaSession' in navigator) {
+      navigator.mediaSession.playbackState = 'paused';
+    }
+  }
+
+  function resumeCurrentTrack() {
+    if (isPlaying || currentIndex < 0) return;
+    playTrack(currentIndex, pausedOffset, false);
+  }
+
+  function seekToTime(sec) {
+    if (currentIndex < 0 || currentDuration <= 0) return;
+    const targetSec = Math.max(0, Math.min(sec, currentDuration - 0.1));
+    pausedOffset = targetSec;
+    if (isPlaying) {
+      playTrack(currentIndex, targetSec, false);
+    } else {
+      currentTimeEl.textContent = formatTime(targetSec);
+      remainTimeBadge.textContent = `-${formatTime(Math.max(0, currentDuration - targetSec))}`;
+    }
+  }
+
+  function getCurrentPlaybackTime() {
+    if (!isPlaying || !audioCtx) return pausedOffset;
+    return Math.max(0, Math.min(currentDuration, audioCtx.currentTime - trackStartCtxTime));
+  }
+
+  fileInput.addEventListener('change', (e) => {
+    const files = Array.from(e.target.files);
+    if (!files.length) return;
+    const wasEmpty = tracks.length === 0;
+    const newTracks = files.map(file => ({
+      name: file.name.replace(/\.[^/.]+$/, ""),
+      file: file,
+      buffer: null,
+      decodingPromise: null
+    }));
+    tracks = tracks.concat(newTracks);
+    trackCountEl.textContent = `${tracks.length} เพลง`;
+    renderPlaylist();
+    if (wasEmpty) {
+      playTrack(0, 0, false);
+    } else {
+      preloadNextTrackBuffer();
+    }
+    fileInput.value = '';
+  });
+
+  clearTracksBtn.addEventListener('click', () => {
+    if (!tracks.length) return;
+
+    if (isPlaying && currentIndex >= 0 && currentIndex < tracks.length) {
+      if (!clearAfterTrack) {
+        stopSourceSafely(fadingOutSource);
+        fadingOutSource = null;
+        const currentTrack = tracks[currentIndex];
+        tracks = [currentTrack];
+        currentIndex = 0;
+        clearAfterTrack = true;
+
+        trackCountEl.textContent = '1 เพลง (รอล้าง)';
+        clearTracksBtn.classList.add('pending');
+        clearTracksBtn.textContent = '⏳ รอจบเพลง';
+        nowPlayingEl.textContent = `▶ ${currentTrack.name} (จะล้างหลังจบเพลง)`;
+        renderPlaylist();
+      } else {
+        resetClearButtonUI();
+        trackCountEl.textContent = `${tracks.length} เพลง`;
+        nowPlayingEl.textContent = `▶ ${tracks[currentIndex].name}`;
+      }
+    } else {
+      performFullClear();
+    }
+  });
+
+  function renderPlaylist() {
+    playlistEl.innerHTML = '';
+    tracks.forEach((track, idx) => {
+      const div = document.createElement('div');
+      div.className = 'song-item' + (idx === currentIndex ? ' active' : '');
+      div.innerHTML = `<span>${idx === currentIndex ? '🎧' : '🎵'}</span> <span>${idx + 1}. ${track.name}</span>`;
+      div.onclick = () => playTrack(idx, 0, false);
+      playlistEl.appendChild(div);
+    });
+  }
+
+  function getNextTrackIndex(isManualNext) {
+    if (tracks.length === 0) return -1;
+    if (!isManualNext && repeatMode === 'one') {
+      return currentIndex;
+    }
+    if (isShuffleOn && tracks.length > 1) {
+      let randIdx;
+      do {
+        randIdx = Math.floor(Math.random() * tracks.length);
+      } while (randIdx === currentIndex);
+      return randIdx;
+    }
+    const nextIdx = currentIndex + 1;
+    if (nextIdx >= tracks.length) {
+      return (repeatMode === 'all' || isManualNext) ? 0 : -1;
+    }
+    return nextIdx;
+  }
+
+  function playNextTrack(isManualNext = true, useCrossfade = false) {
+    if (!tracks.length) return;
+    const nextIdx = getNextTrackIndex(isManualNext);
+    if (nextIdx === -1) {
+      pauseCurrentTrack();
+      pausedOffset = 0;
+      return;
+    }
+    playTrack(nextIdx, 0, useCrossfade);
+  }
+
+  function playPrevTrack() {
+    if (!tracks.length) return;
+    if (getCurrentPlaybackTime() > 3) {
+      seekToTime(0);
+      return;
+    }
+    playTrack((currentIndex - 1 + tracks.length) % tracks.length, 0, false);
+  }
+
+  playPauseBtn.addEventListener('click', () => {
+    if (!tracks.length) return;
+    if (isPlaying) {
+      pauseCurrentTrack();
+    } else {
+      resumeCurrentTrack();
+    }
+  });
+
+  prevBtn.addEventListener('click', playPrevTrack);
+  nextBtn.addEventListener('click', () => playNextTrack(true, false));
+
+  setInterval(() => {
+    if (currentIndex < 0 || currentDuration <= 0) return;
+
+    const curTime = getCurrentPlaybackTime();
+    const remaining = Math.max(0, currentDuration - curTime);
+
+    seekBar.max = Math.floor(currentDuration);
+    seekBar.value = Math.floor(curTime);
+    currentTimeEl.textContent = formatTime(curTime);
+    durationTimeEl.textContent = formatTime(currentDuration);
+    remainTimeBadge.textContent = `-${formatTime(remaining)}`;
+
+    if (isPlaying) {
+      if (clearAfterTrack) {
+        if (!isFadingOut && remaining <= 1.5 && remaining > 0) {
+          smoothFadeOutAndClear();
+        }
+      } else if (
+        crossfadeSec > 0 &&
+        crossfadeTriggeredForSession !== playSessionId &&
+        currentDuration > crossfadeSec + 1.5 &&
+        remaining <= crossfadeSec &&
+        remaining > 0.2
+      ) {
+        crossfadeTriggeredForSession = playSessionId;
+        playNextTrack(false, true);
+      }
+    }
+  }, 80);
+
+  seekBar.addEventListener('input', () => {
+    seekToTime(parseFloat(seekBar.value));
+  });
+
+  function formatTime(sec) {
+    const m = Math.floor(sec / 60);
+    const s = Math.floor(sec % 60);
+    return `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+  }
+
+  // ==========================================
+  // ระบบวาดจอ VFD Spectrum Analyzer
+  // ==========================================
+  const canvas = document.getElementById('vfdCanvas');
+  const ctx = canvas.getContext('2d');
+
+  const NUM_BANDS = 15;
+  const NUM_SEGMENTS = 14;
+  const peakLevels = new Array(NUM_BANDS).fill(0);
+  const peakHoldTimers = new Array(NUM_BANDS).fill(0);
+
+  const bandRanges = [
+    [1, 1], [2, 2], [3, 4], [5, 6], [7, 9],
+    [10, 13], [14, 18], [19, 25], [26, 34], [35, 46],
+    [47, 62], [63, 84], [85, 112], [113, 148], [149, 200]
+  ];
+
+  const freqLabels = ['60', '100', '160', '250', '400', '630', '1k', '1.6k', '2.5k', '4k', '6.3k', '10k', '12k', '14k', '16k'];
+
+  function drawVfdSpectrum() {
+    requestAnimationFrame(drawVfdSpectrum);
+
+    const w = canvas.width;
+    const h = canvas.height;
+    const isAmber = (currentTheme === 'amber');
+
+    ctx.fillStyle = isAmber ? '#0a0704' : '#03080b';
+    ctx.fillRect(0, 0, w, h);
+
+    ctx.font = 'bold 10px monospace';
+    ctx.textBaseline = 'top';
+
+    if (isSuperBassOn) {
+      ctx.fillStyle = '#ffab00';
+      ctx.shadowBlur = 8;
+      ctx.shadowColor = '#ffab00';
+      ctx.fillText('● SUPER BASS', 14, 7);
+    } else {
+      ctx.fillStyle = isAmber ? '#382a1c' : '#18333a';
+      ctx.shadowBlur = 0;
+      ctx.fillText('○ SUPER BASS', 14, 7);
+    }
+
+    if (isBbeWideOn) {
+      ctx.fillStyle = isAmber ? '#ffd54f' : '#00e5ff';
+      ctx.shadowBlur = 8;
+      ctx.shadowColor = ctx.fillStyle;
+      ctx.fillText('● BBE WIDE', 175, 7);
+    } else {
+      ctx.fillStyle = isAmber ? '#382a1c' : '#18333a';
+      ctx.shadowBlur = 0;
+      ctx.fillText('○ BBE WIDE', 175, 7);
+    }
+
+    ctx.fillStyle = '#ff3d00';
+    ctx.shadowBlur = 6;
+    ctx.shadowColor = '#ff3d00';
+    ctx.fillText('VFD ANALYZER', w - 98, 7);
+    ctx.shadowBlur = 0;
+
+    ctx.strokeStyle = isAmber ? 'rgba(255, 179, 0, 0.18)' : 'rgba(0, 245, 212, 0.15)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(12, 22);
+    ctx.lineTo(w - 12, 22);
+    ctx.stroke();
+
+    let dataArray = null;
+    if (analyser && isPlaying) {
+      dataArray = new Uint8Array(analyser.frequencyBinCount);
+      analyser.getByteFrequencyData(dataArray);
+
+      const bassEnergy = (dataArray[1] + dataArray[2] + dataArray[3]) / 3;
+      if (bassEnergy > 175) {
+        const glowColor = isAmber ? 'rgba(255, 179, 0, 0.75)' : 'rgba(0, 245, 212, 0.75)';
+        playerShell.style.boxShadow = `0 0 ${22 + (bassEnergy - 165) * 0.6}px ${glowColor}, 0 0 15px rgba(255, 61, 0, 0.5)`;
+      } else {
+        playerShell.style.boxShadow = '';
+      }
+    }
+
+    const areaLeft = 14;
+    const areaRight = w - 14;
+    const areaTop = 28;
+    const areaBottom = h - 19;
+    const areaWidth = areaRight - areaLeft;
+    const areaHeight = areaBottom - areaTop;
+
+    const colGap = 5;
+    const colWidth = (areaWidth - colGap * (NUM_BANDS - 1)) / NUM_BANDS;
+    const segGap = 2.0;
+    const segHeight = (areaHeight - segGap * (NUM_SEGMENTS - 1)) / NUM_SEGMENTS;
+
+    for (let b = 0; b < NUM_BANDS; b++) {
+      let activeSegments = 0;
+
+      if (dataArray) {
+        const [startBin, endBin] = bandRanges[b];
+        let sum = 0;
+        let count = 0;
+        for (let i = startBin; i <= endBin; i++) {
+          sum += dataArray[i] || 0;
+          count++;
+        }
+        let avg = sum / count;
+        const boost = 1 + (b * 0.032);
+        avg = Math.min(255, avg * boost);
+        activeSegments = Math.round((avg / 245) * NUM_SEGMENTS);
+      }
+
+      if (activeSegments >= peakLevels[b]) {
+        peakLevels[b] = activeSegments;
+        peakHoldTimers[b] = 18;
+      } else {
+        if (peakHoldTimers[b] > 0) {
+          peakHoldTimers[b]--;
+        } else if (peakLevels[b] > 0) {
+          peakLevels[b] -= 0.45;
+        }
+      }
+
+      const x = areaLeft + b * (colWidth + colGap);
+      const peakSeg = Math.floor(peakLevels[b]);
+
+      for (let s = 0; s < NUM_SEGMENTS; s++) {
+        const y = areaBottom - (s + 1) * segHeight - s * segGap;
+        const isLit = s < activeSegments;
+        const isPeak = (s === peakSeg && peakSeg > 0);
+
+        if (isLit || isPeak) {
+          let color;
+          if (isAmber) {
+            if (s >= 12) color = '#ff1744';
+            else if (s >= 9) color = '#ff6d00';
+            else if (s >= 6) color = '#ffb300';
+            else color = '#ffd54f';
+            if (isPeak && !isLit) color = '#ffffff';
+          } else {
+            if (s >= 12) color = '#ff1744';
+            else if (s >= 9) color = '#ff9100';
+            else if (s >= 7) color = '#00e5ff';
+            else color = '#00f5d4';
+            if (isPeak && !isLit) color = '#ff3d00';
+          }
+
+          ctx.fillStyle = color;
+          ctx.shadowBlur = isPeak ? 10 : 6;
+          ctx.shadowColor = color;
+        } else {
+          ctx.fillStyle = isAmber ? 'rgba(255, 179, 0, 0.07)' : 'rgba(0, 245, 212, 0.065)';
+          ctx.shadowBlur = 0;
+        }
+
+        ctx.fillRect(x, y, colWidth, segHeight);
+      }
+
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = isAmber ? '#8c6d46' : '#3b6e78';
+      ctx.font = '8px monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText(freqLabels[b], x + colWidth / 2, areaBottom + 4);
+    }
+
+    ctx.textAlign = 'left';
+  }
+
+  drawVfdSpectrum();
+</script>
+
+</body>
+</html>
